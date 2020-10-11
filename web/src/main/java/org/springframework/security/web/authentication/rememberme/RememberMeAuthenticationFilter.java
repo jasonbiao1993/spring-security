@@ -59,6 +59,17 @@ import org.springframework.web.filter.GenericFilterBean;
  * succeeds or fails. If some control over the destination for authenticated users is
  * required, an {@link AuthenticationSuccessHandler} can be injected
  *
+ * 记住我授权过滤器，将会 从Cookie 中获取token信息
+ * 介于 UsernamePasswordAuthenticationFilter 和 AnonymousAuthenticationFilter 之间的一个filter
+ * 它主要负责的就是前面的filter都没有认证成功后从Cookie中获取token信息然后再通过tokenRepository 获取 登录用户名，
+ * 然后UserDetailsServcie 加载 UserDetails 信息 ，最后创建 Authticaton（RememberMeAuthenticationToken）
+ * 信息再调用 AuthenticationManager.authenticate()  进行认证过程。
+ *
+ * 作者：BUG9
+ * 链接：https://juejin.im/post/6844903926710419469
+ * 来源：掘金
+ * 著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
+ *
  * @author Ben Alex
  * @author Luke Taylor
  */
@@ -101,10 +112,13 @@ public class RememberMeAuthenticationFilter extends GenericFilterBean implements
 			chain.doFilter(request, response);
 			return;
 		}
+
+		//  1 调用 rememberMeServices.autoLogin() 获取Authtication 信息
 		Authentication rememberMeAuth = this.rememberMeServices.autoLogin(request, response);
 		if (rememberMeAuth != null) {
 			// Attempt authenticaton via AuthenticationManager
 			try {
+				// 2 调用 authenticationManager.authenticate() 认证
 				rememberMeAuth = this.authenticationManager.authenticate(rememberMeAuth);
 				// Store to SecurityContextHolder
 				SecurityContextHolder.getContext().setAuthentication(rememberMeAuth);

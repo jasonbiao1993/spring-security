@@ -111,15 +111,23 @@ public class AuthenticationConfiguration {
 		if (this.authenticationManagerInitialized) {
 			return this.authenticationManager;
 		}
+
+		// 1. 获取授权管理器对象
 		AuthenticationManagerBuilder authBuilder = this.applicationContext.getBean(AuthenticationManagerBuilder.class);
 		if (this.buildingAuthenticationManager.getAndSet(true)) {
+			// 授权管理器装饰器，继承授权管理接口，用于扩展
 			return new AuthenticationManagerDelegator(authBuilder);
 		}
+
+		// 全局身份验证适配器
 		for (GlobalAuthenticationConfigurerAdapter config : this.globalAuthConfigurers) {
 			authBuilder.apply(config);
 		}
+
+		// 构建身份验证管理器
 		this.authenticationManager = authBuilder.build();
 		if (this.authenticationManager == null) {
+			// 懒加载默认的身份验证管理器
 			this.authenticationManager = getAuthenticationManagerBean();
 		}
 		this.authenticationManagerInitialized = true;

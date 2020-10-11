@@ -40,6 +40,8 @@ import org.springframework.web.filter.GenericFilterBean;
  * Detects if there is no {@code Authentication} object in the
  * {@code SecurityContextHolder}, and populates it with one if needed.
  *
+ * AnonymousAuthenticationFilter ，用于前面所有filter都认证失败的情况下，自动创建一个默认的匿名用户，拥有匿名访问权限
+ *
  * @author Ben Alex
  * @author Luke Taylor
  */

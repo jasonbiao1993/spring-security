@@ -31,6 +31,8 @@ import org.springframework.util.Assert;
  * <p>
  * To be successfully validated, the {@link RememberMeAuthenticationToken#getKeyHash()}
  * must match this class' {@link #getKey()}.
+ *
+ * 授权认证提供者
  */
 public class RememberMeAuthenticationProvider implements AuthenticationProvider, InitializingBean, MessageSourceAware {
 

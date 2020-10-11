@@ -39,6 +39,8 @@ import org.springframework.security.web.FilterInvocation;
  * Refer to {@link AbstractSecurityInterceptor} for details on the workflow.
  * </p>
  *
+ * FilterSecurityInterceptor 是整个Security filter链中的最后一个，它的主要功能就是判断认证成功的用户是否有权限访问接口
+ *
  * @author Ben Alex
  * @author Rob Winch
  */

@@ -86,6 +86,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
  * present a BASIC authentication header as they will be authenticated using the
  * remember-me mechanism.
  *
+ * BasicAuthenticationFilter 主要是从Header 中获取 Authorization 参数信息，然后调用认证，认证成功后最后直接访问接口，
+ * 不像UsernameAuthticationFilter过程一样通过AuthenticationSuccessHandler 进行跳转
+ *
  * @author Ben Alex
  */
 public class BasicAuthenticationFilter extends OncePerRequestFilter {

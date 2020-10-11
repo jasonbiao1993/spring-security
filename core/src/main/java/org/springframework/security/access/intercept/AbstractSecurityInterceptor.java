@@ -183,6 +183,8 @@ public abstract class AbstractSecurityInterceptor
 					+ " but AbstractSecurityInterceptor only configured to support secure objects of type: "
 					+ getSecureObjectClass());
 		}
+
+		// 1 获取访问地址的权限信息
 		Collection<ConfigAttribute> attributes = this.obtainSecurityMetadataSource().getAttributes(object);
 		if (CollectionUtils.isEmpty(attributes)) {
 			Assert.isTrue(!this.rejectPublicInvocations,
@@ -200,6 +202,8 @@ public abstract class AbstractSecurityInterceptor
 			credentialsNotFound(this.messages.getMessage("AbstractSecurityInterceptor.authenticationNotFound",
 					"An Authentication object was not found in the SecurityContext"), object, attributes);
 		}
+
+		// 2 获取当前访问用户权限信息
 		Authentication authenticated = authenticateIfRequired();
 		if (this.logger.isTraceEnabled()) {
 			this.logger.trace(LogMessage.format("Authorizing %s with attributes %s", object, attributes));
@@ -214,6 +218,7 @@ public abstract class AbstractSecurityInterceptor
 		}
 
 		// Attempt to run as a different user
+		// 尝试用另一个用户运行
 		Authentication runAs = this.runAsManager.buildRunAs(authenticated, object, attributes);
 		if (runAs != null) {
 			SecurityContext origCtx = SecurityContextHolder.getContext();
@@ -224,6 +229,7 @@ public abstract class AbstractSecurityInterceptor
 				this.logger.debug(LogMessage.format("Switched to RunAs authentication %s", runAs));
 			}
 			// need to revert to token.Authenticated post-invocation
+			// 还原身份令牌
 			return new InterceptorStatusToken(origCtx, true, attributes, object);
 		}
 		this.logger.trace("Did not switch RunAs authentication since RunAsManager returned null");
@@ -235,6 +241,8 @@ public abstract class AbstractSecurityInterceptor
 	private void attemptAuthorization(Object object, Collection<ConfigAttribute> attributes,
 			Authentication authenticated) {
 		try {
+			// 3  默认调用AffirmativeBased.decide() 方法, 其内部 使用 AccessDecisionVoter 对象 进行投票机制判权，
+			// 判权失败直接抛出 AccessDeniedException 异常
 			this.accessDecisionManager.decide(authenticated, object, attributes);
 		}
 		catch (AccessDeniedException ex) {

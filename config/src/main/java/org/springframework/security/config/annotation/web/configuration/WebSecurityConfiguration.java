@@ -60,6 +60,8 @@ import org.springframework.util.Assert;
  * {@link WebSecurityConfigurer} and exposing it as a {@link Configuration}. This
  * configuration is imported when using {@link EnableWebSecurity}.
  *
+ * 授权相关的配置
+ *
  * @see EnableWebSecurity
  * @see WebSecurity
  * @author Rob Winch
@@ -106,6 +108,8 @@ public class WebSecurityConfiguration implements ImportAware, BeanClassLoaderAwa
 		boolean hasFilterChain = !this.securityFilterChains.isEmpty();
 		Assert.state(!(hasConfigurers && hasFilterChain),
 				"Found WebSecurityConfigurerAdapter as well as SecurityFilterChain. Please select just one.");
+
+		// 判断是否为null, 为null加载默认配置
 		if (!hasConfigurers && !hasFilterChain) {
 			WebSecurityConfigurerAdapter adapter = this.objectObjectPostProcessor
 					.postProcess(new WebSecurityConfigurerAdapter() {
@@ -124,6 +128,8 @@ public class WebSecurityConfiguration implements ImportAware, BeanClassLoaderAwa
 		for (WebSecurityCustomizer customizer : this.webSecurityCustomizers) {
 			customizer.customize(this.webSecurity);
 		}
+
+		// web Security
 		return this.webSecurity.build();
 	}
 

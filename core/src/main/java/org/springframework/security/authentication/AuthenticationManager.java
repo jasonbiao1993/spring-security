@@ -46,9 +46,11 @@ public interface AuthenticationManager {
 	 * above (i.e. if an account is disabled or locked, the authentication request is
 	 * immediately rejected and the credentials testing process is not performed). This
 	 * prevents credentials being tested against disabled or locked accounts.
-	 * @param authentication the authentication request object
+	 * @param authentication the authentication request object 授权请求对象
 	 * @return a fully authenticated object including credentials
 	 * @throws AuthenticationException if authentication fails
+	 *
+	 * 认证接口
 	 */
 	Authentication authenticate(Authentication authentication) throws AuthenticationException;
 

@@ -118,6 +118,7 @@ public abstract class AbstractRememberMeServices implements RememberMeServices, 
 	 */
 	@Override
 	public final Authentication autoLogin(HttpServletRequest request, HttpServletResponse response) {
+		// 1 从Cookie 中获取 token 信息
 		String rememberMeCookie = extractRememberMeCookie(request);
 		if (rememberMeCookie == null) {
 			return null;
@@ -129,10 +130,13 @@ public abstract class AbstractRememberMeServices implements RememberMeServices, 
 			return null;
 		}
 		try {
+			// 2 解析 token信息
 			String[] cookieTokens = decodeCookie(rememberMeCookie);
+			// 3 通过 token 信息 生成 Uerdetails 信息
 			UserDetails user = processAutoLoginCookie(cookieTokens, request, response);
 			this.userDetailsChecker.check(user);
 			this.logger.debug("Remember-me cookie accepted");
+			// 4 通过 UserDetails 信息创建 Authentication
 			return createSuccessfulAuthentication(request, user);
 		}
 		catch (CookieTheftException ex) {
@@ -272,6 +276,7 @@ public abstract class AbstractRememberMeServices implements RememberMeServices, 
 	@Override
 	public final void loginSuccess(HttpServletRequest request, HttpServletResponse response,
 			Authentication successfulAuthentication) {
+		// 这里就在判断用户是否勾选了记住我
 		if (!rememberMeRequested(request, this.parameter)) {
 			this.logger.debug("Remember-me login not requested.");
 			return;

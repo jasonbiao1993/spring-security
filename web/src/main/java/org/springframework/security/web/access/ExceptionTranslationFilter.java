@@ -74,6 +74,10 @@ import org.springframework.web.filter.GenericFilterBean;
  * authenticated. The default implementation is {@link HttpSessionRequestCache}.</li>
  * </ul>
  *
+ * ExceptionTranslationFilter 其实没有做任何过滤处理，但别小看它得作用，
+ * 它最大也最牛叉之处就在于它捕获AuthenticationException 和AccessDeniedException，
+ * 如果发生的异常是这2个异常 会调用 handleSpringSecurityException()方法进行处理
+ *
  * @author Ben Alex
  * @author colin sampaleanu
  */

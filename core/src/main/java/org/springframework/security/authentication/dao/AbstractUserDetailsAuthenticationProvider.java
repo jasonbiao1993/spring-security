@@ -124,12 +124,15 @@ public abstract class AbstractUserDetailsAuthenticationProvider
 		Assert.isInstanceOf(UsernamePasswordAuthenticationToken.class, authentication,
 				() -> this.messages.getMessage("AbstractUserDetailsAuthenticationProvider.onlySupports",
 						"Only UsernamePasswordAuthenticationToken is supported"));
+		// 从 authentication 中获取 用户名
 		String username = determineUsername(authentication);
 		boolean cacheWasUsed = true;
+		// 根据username 从缓存中获取 认证成功的 UserDetails 信息
 		UserDetails user = this.userCache.getUserFromCache(username);
 		if (user == null) {
 			cacheWasUsed = false;
 			try {
+				// 如果缓存中没有用户信息 需要 获取用户信息（由 DaoAuthenticationProvider 实现 ）
 				user = retrieveUser(username, (UsernamePasswordAuthenticationToken) authentication);
 			}
 			catch (UsernameNotFoundException ex) {
@@ -143,10 +146,13 @@ public abstract class AbstractUserDetailsAuthenticationProvider
 			Assert.notNull(user, "retrieveUser returned null - a violation of the interface contract");
 		}
 		try {
+			// 前置检查账户是否锁定，过期，冻结（由DefaultPreAuthenticationChecks类实现）
 			this.preAuthenticationChecks.check(user);
+			// 主要是验证 获取到的用户密码与传入的用户密码是否一致
 			additionalAuthenticationChecks(user, (UsernamePasswordAuthenticationToken) authentication);
 		}
 		catch (AuthenticationException ex) {
+			// 这里官方发现缓存可能导致了某些问题，又重新去认证一次
 			if (!cacheWasUsed) {
 				throw ex;
 			}
@@ -157,7 +163,9 @@ public abstract class AbstractUserDetailsAuthenticationProvider
 			this.preAuthenticationChecks.check(user);
 			additionalAuthenticationChecks(user, (UsernamePasswordAuthenticationToken) authentication);
 		}
+		// 后置检查用户密码是否 过期
 		this.postAuthenticationChecks.check(user);
+		// 验证成功后的用户信息存入缓存
 		if (!cacheWasUsed) {
 			this.userCache.putUserInCache(user);
 		}
@@ -165,6 +173,8 @@ public abstract class AbstractUserDetailsAuthenticationProvider
 		if (this.forcePrincipalAsString) {
 			principalToReturn = user.getUsername();
 		}
+
+		// 重新创建一个 authenticated 为true （即认证成功）的 UsernamePasswordAuthenticationToken 对象并返回
 		return createSuccessAuthentication(principalToReturn, authentication, user);
 	}
 

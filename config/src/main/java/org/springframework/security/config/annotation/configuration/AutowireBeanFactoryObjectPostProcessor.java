@@ -35,6 +35,8 @@ import org.springframework.util.Assert;
  * post processing of {@link Aware} methods, {@link InitializingBean#afterPropertiesSet()}
  * , and {@link DisposableBean#destroy()}.
  *
+ * 使用指定的 autowireBeanFactory 构造对象
+ * autowireBeanFactory 通常是 Spring bean 容器
  * @author Rob Winch
  * @since 3.2
  */
@@ -54,6 +56,20 @@ final class AutowireBeanFactoryObjectPostProcessor
 		this.autowireBeanFactory = autowireBeanFactory;
 	}
 
+
+	/**
+	 * 对某个刚刚创建的对象 object 执行这里所谓的 post-process 流程 :
+	 *  1. 使用指定的 autowireBeanFactory 对该对象 object 执行初始化过程;
+	 *  2. 使用指定的 autowireBeanFactory 对该对象 object 执行依赖注入过程;
+	 *  3. 如果该对象 object 是一个 DisposableBean , 则将它记录下来，在当前对象的destroy()
+	 *  被调用时，它们的 destroy() 方法也都会被调用;
+	 *  4. 如果该对象 object 是一个 SmartInitializingSingleton , 则将它记录下来，
+	 * 	在当前对象的 afterSingletonsInstantiated () 被调用时，它们的 afterSingletonsInstantiated()
+	 * 	方法也都会被调用;
+	 * @param object the object to initialize
+	 * @param <T>
+	 * @return
+	 */
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T> T postProcess(T object) {
@@ -78,6 +94,11 @@ final class AutowireBeanFactoryObjectPostProcessor
 		return result;
 	}
 
+
+	/**
+	 * SmartInitializingSingleton 接口定义的生命周期方法，在被调用时也回调用被记录的实现了
+	 * SmartInitializingSingleton 接口的那些对象的方法 afterSingletonsInstantiated()
+	 */
 	@Override
 	public void afterSingletonsInstantiated() {
 		for (SmartInitializingSingleton singleton : this.smartSingletons) {
@@ -85,6 +106,10 @@ final class AutowireBeanFactoryObjectPostProcessor
 		}
 	}
 
+	/**
+	 * DisposableBean 接口定义的生命周期方法，在被调用时也回调用被记录的实现了
+	 * DisposableBean 接口的那些对象的方法 destroy()
+	 */
 	@Override
 	public void destroy() {
 		for (DisposableBean disposable : this.disposableBeans) {

@@ -219,12 +219,20 @@ public class AuthenticationManagerBuilder
 		return this;
 	}
 
+
+	/**
+	 * 创建授权管理器
+	 * @return
+	 * @throws Exception
+	 */
 	@Override
 	protected ProviderManager performBuild() throws Exception {
 		if (!isConfigured()) {
 			this.logger.debug("No authenticationProviders and no parentAuthenticationManager defined. Returning null.");
 			return null;
 		}
+
+		// 1  创建了一个包含  authenticationProviders  参数 的 ProviderManager 对象
 		ProviderManager providerManager = new ProviderManager(this.authenticationProviders,
 				this.parentAuthenticationManager);
 		if (this.eraseCredentials != null) {

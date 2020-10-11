@@ -114,6 +114,8 @@ import java.util.Map;
  * {@link IllegalArgumentException}. This behavior can be customized using
  * {@link #setDefaultPasswordEncoderForMatches(PasswordEncoder)}.
  *
+ * 密码编码委托类
+ *
  * @author Rob Winch
  * @author Michael Simons
  * @since 5.0
@@ -186,6 +188,10 @@ public class DelegatingPasswordEncoder implements PasswordEncoder {
 		this.defaultPasswordEncoderForMatches = defaultPasswordEncoderForMatches;
 	}
 
+	/**
+	 * 通过 密码编码器的名称作为前缀 + 委托各类密码编码器来实现encode的。
+	 * {@link org.springframework.security.crypto.factory.PasswordEncoderFactories#createDelegatingPasswordEncoder}
+	 */
 	@Override
 	public String encode(CharSequence rawPassword) {
 		return PREFIX + this.idForEncode + SUFFIX + this.passwordEncoderForEncode.encode(rawPassword);

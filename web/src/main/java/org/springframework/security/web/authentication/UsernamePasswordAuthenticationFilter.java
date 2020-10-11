@@ -40,6 +40,12 @@ import org.springframework.util.Assert;
  * <p>
  * This filter by default responds to the URL {@code /login}.
  *
+ * 1.通过 requiresAuthentication（）判断 是否以POST 方式请求 /login
+ * 2.调用 attemptAuthentication() 方法进行认证，内部创建了 authenticated 属性为 false（即未授权）的UsernamePasswordAuthenticationToken 对象， 并传递给 AuthenticationManager().authenticate() 方法进行认证，认证成功后 返回一个 authenticated = true （即授权成功的)UsernamePasswordAuthenticationToken 对象
+ * 3.通过 sessionStrategy.onAuthentication() 将 Authentication 放入Session中
+ * 4.通过 successfulAuthentication() 调用 AuthenticationSuccessHandler 的 onAuthenticationSuccess 接口 进行成功处理（ 可以 通过 继承 AuthenticationSuccessHandler 自行编写成功处理逻辑 ）successfulAuthentication(request, response, chain, authResult);
+ * 5.通过 unsuccessfulAuthentication() 调用AuthenticationFailureHandler 的 onAuthenticationFailure 接口 进行失败处理（可以通过继承AuthenticationFailureHandler 自行编写失败处理逻辑 ）
+ *
  * @author Ben Alex
  * @author Colin Sampaleanu
  * @author Luke Taylor
@@ -68,6 +74,14 @@ public class UsernamePasswordAuthenticationFilter extends AbstractAuthentication
 		super(DEFAULT_ANT_PATH_REQUEST_MATCHER, authenticationManager);
 	}
 
+	/**
+	 * 尝试进行身份验证
+	 * @param request from which to extract parameters and perform the authentication
+	 * @param response the response, which may be needed if the implementation has to do a
+	 * redirect as part of a multi-stage authentication process (such as OpenID).
+	 * @return 授权结果
+	 * @throws AuthenticationException 授权异常
+	 */
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
 			throws AuthenticationException {

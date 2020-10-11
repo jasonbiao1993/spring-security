@@ -83,6 +83,8 @@ import org.springframework.util.CollectionUtils;
  * {@code AuthenticationManager} if one has been set. So in this situation, the parent
  * should not generally be configured to publish events or there will be duplicates.
  *
+ * AuthenticationManager的实现子类，其内部维护了 一个 List<AuthenticationProvider> 对象， 用于支持和扩展 多种形式的认证方式
+ *
  * @author Ben Alex
  * @author Luke Taylor
  * @see DefaultAuthenticationEventPublisher
@@ -93,6 +95,9 @@ public class ProviderManager implements AuthenticationManager, MessageSourceAwar
 
 	private AuthenticationEventPublisher eventPublisher = new NullEventPublisher();
 
+	/**
+	 * 用于不同方式的认证，如：账户密码的、短信验证码登录、邮箱登录等等
+	 */
 	private List<AuthenticationProvider> providers = Collections.emptyList();
 
 	protected MessageSourceAccessor messages = SpringSecurityMessageSource.getAccessor();
@@ -170,7 +175,9 @@ public class ProviderManager implements AuthenticationManager, MessageSourceAwar
 		Authentication parentResult = null;
 		int currentPosition = 0;
 		int size = this.providers.size();
+		// 1 通过 getProviders() 方法获取到内部维护的 List<AuthenticationProvider> 对象 并 通过遍历的方式 去 认证，只要认证成功 就 break
 		for (AuthenticationProvider provider : getProviders()) {
+			// 2. 判断是否使用此AuthenticationProvider进行认证
 			if (!provider.supports(toTest)) {
 				continue;
 			}
@@ -179,6 +186,7 @@ public class ProviderManager implements AuthenticationManager, MessageSourceAwar
 						provider.getClass().getSimpleName(), ++currentPosition, size));
 			}
 			try {
+				// 3. 通过委托给AuthenticationProvider，实现认证
 				result = provider.authenticate(authentication);
 				if (result != null) {
 					copyDetails(authentication, result);
@@ -198,6 +206,7 @@ public class ProviderManager implements AuthenticationManager, MessageSourceAwar
 		if (result == null && this.parent != null) {
 			// Allow the parent to try.
 			try {
+				// 4. 都认证不成功，使用父授权管理尝试认证
 				parentResult = this.parent.authenticate(authentication);
 				result = parentResult;
 			}
@@ -216,6 +225,7 @@ public class ProviderManager implements AuthenticationManager, MessageSourceAwar
 			if (this.eraseCredentialsAfterAuthentication && (result instanceof CredentialsContainer)) {
 				// Authentication is complete. Remove credentials and other secret data
 				// from authentication
+				// 删除认证相关信息，防止信息泄漏
 				((CredentialsContainer) result).eraseCredentials();
 			}
 			// If the parent AuthenticationManager was attempted and successful then it

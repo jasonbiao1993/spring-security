@@ -38,6 +38,8 @@ public interface AuthenticationProvider {
 	 * the next <code>AuthenticationProvider</code> that supports the presented
 	 * <code>Authentication</code> class will be tried.
 	 * @throws AuthenticationException if authentication fails.
+	 *
+	 * 定义认证接口方法
 	 */
 	Authentication authenticate(Authentication authentication) throws AuthenticationException;
 
@@ -59,6 +61,7 @@ public interface AuthenticationProvider {
 	 * @param authentication
 	 * @return <code>true</code> if the implementation can more closely evaluate the
 	 * <code>Authentication</code> class presented
+	 * 定义判断是否可以认证处理的接口方法
 	 */
 	boolean supports(Class<?> authentication);
 

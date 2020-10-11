@@ -212,31 +212,43 @@ public abstract class AbstractAuthenticationProcessingFilter extends GenericFilt
 		doFilter((HttpServletRequest) request, (HttpServletResponse) response, chain);
 	}
 
+	// 1 AbstractAuthenticationProcessingFilter 的 doFilter 方法
 	private void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
+		// 2 判断请求地址是否是  /login 和 请求方式为 POST  （UsernamePasswordAuthenticationFilter 构造方法 确定的）
 		if (!requiresAuthentication(request, response)) {
 			chain.doFilter(request, response);
 			return;
 		}
 		try {
+			// 3 调用 子类  UsernamePasswordAuthenticationFilter 的 attemptAuthentication 方法
+			// attemptAuthentication 方法内部创建了 authenticated 属性为 false （即未授权）的 UsernamePasswordAuthenticationToken 对象， 并传递给 AuthenticationManager().authenticate() 方法进行认证，
+			// 认证成功后 返回一个 authenticated = true （即授权成功的） UsernamePasswordAuthenticationToken 对象
 			Authentication authenticationResult = attemptAuthentication(request, response);
 			if (authenticationResult == null) {
 				// return immediately as subclass has indicated that it hasn't completed
 				return;
 			}
+			// 4 将认证成功的 Authentication 存入Session中
 			this.sessionStrategy.onAuthentication(authenticationResult, request, response);
 			// Authentication success
 			if (this.continueChainBeforeSuccessfulAuthentication) {
 				chain.doFilter(request, response);
 			}
+
+
+
+			// 6 认证成功后 调用 AuthenticationSuccessHandler 的 onAuthenticationSuccess 接口 进行失败处理（ 可以 通过 继承 AuthenticationSuccessHandler 自行编写成功处理逻辑 ）
 			successfulAuthentication(request, response, chain, authenticationResult);
 		}
 		catch (InternalAuthenticationServiceException failed) {
+			// 5 认证失败后 调用 AuthenticationFailureHandler 的 onAuthenticationFailure 接口 进行失败处理（ 可以 通过 继承 AuthenticationFailureHandler 自行编写失败处理逻辑 ）
 			this.logger.error("An internal error occurred while trying to authenticate the user.", failed);
 			unsuccessfulAuthentication(request, response, failed);
 		}
 		catch (AuthenticationException ex) {
 			// Authentication failed
+			// 5 认证失败后 调用 AuthenticationFailureHandler 的 onAuthenticationFailure 接口 进行失败处理（ 可以 通过 继承 AuthenticationFailureHandler 自行编写失败处理逻辑 ）
 			unsuccessfulAuthentication(request, response, ex);
 		}
 	}
@@ -310,14 +322,19 @@ public abstract class AbstractAuthenticationProcessingFilter extends GenericFilt
 	 */
 	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
 			Authentication authResult) throws IOException, ServletException {
+		// 1 设置 认证成功的Authentication对象到SecurityContext中
 		SecurityContextHolder.getContext().setAuthentication(authResult);
 		if (this.logger.isDebugEnabled()) {
 			this.logger.debug(LogMessage.format("Set SecurityContextHolder to %s", authResult));
 		}
+
+		// 2 调用 RememberMe 相关service处理
 		this.rememberMeServices.loginSuccess(request, response, authResult);
 		if (this.eventPublisher != null) {
 			this.eventPublisher.publishEvent(new InteractiveAuthenticationSuccessEvent(authResult, this.getClass()));
 		}
+
+		//3 调用成功处理器
 		this.successHandler.onAuthenticationSuccess(request, response, authResult);
 	}
 

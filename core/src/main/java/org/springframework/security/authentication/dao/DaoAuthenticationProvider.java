@@ -90,6 +90,7 @@ public class DaoAuthenticationProvider extends AbstractUserDetailsAuthentication
 			throws AuthenticationException {
 		prepareTimingAttackProtection();
 		try {
+			// 通过 UserDetailsService 的loadUserByUsername 方法 获取用户信息
 			UserDetails loadedUser = this.getUserDetailsService().loadUserByUsername(username);
 			if (loadedUser == null) {
 				throw new InternalAuthenticationServiceException(

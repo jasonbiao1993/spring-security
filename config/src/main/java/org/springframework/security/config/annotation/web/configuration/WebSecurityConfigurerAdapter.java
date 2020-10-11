@@ -87,6 +87,7 @@ import org.springframework.web.accept.HeaderContentNegotiationStrategy;
  * org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer = sample.MyClassThatExtendsAbstractHttpConfigurer, sample.OtherThatExtendsAbstractHttpConfigurer
  * </pre>
  *
+ * SpringSecurityConfig 配置类
  * @see EnableWebSecurity
  * @author Rob Winch
  */
@@ -310,8 +311,14 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
 		return new UserDetailsServiceDelegator(Arrays.asList(this.localConfigureAuthenticationBldr, globalAuthBuilder));
 	}
 
+	/**
+	 * 初始化配置
+	 * @param web
+	 * @throws Exception
+	 */
 	@Override
 	public void init(WebSecurity web) throws Exception {
+		// 初始化HttpSecurity, 加载filter等等
 		HttpSecurity http = getHttp();
 		web.addSecurityFilterChainBuilder(http).postBuildAction(() -> {
 			FilterSecurityInterceptor securityInterceptor = http.getSharedObject(FilterSecurityInterceptor.class);

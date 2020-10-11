@@ -55,6 +55,8 @@ import org.springframework.web.filter.GenericFilterBean;
  * always available before the filter chain executes (the default is <code>false</code>,
  * as this is resource intensive and not recommended).
  *
+ * 安全上下文持久化过滤
+ *
  * @author Luke Taylor
  * @since 3.0
  */
@@ -95,8 +97,11 @@ public class SecurityContextPersistenceFilter extends GenericFilterBean {
 			}
 		}
 		HttpRequestResponseHolder holder = new HttpRequestResponseHolder(request, response);
+
+		//从Session中获取SecurityContxt 对象，如果Session中没有则创建一个 authtication 属性为 null 的SecurityContext对象
 		SecurityContext contextBeforeChainExecution = this.repo.loadContext(holder);
 		try {
+			// 将 SecurityContext 对象放入 SecurityContextHolder进行管理 （SecurityContextHolder默认使用ThreadLocal 策略来存储认证信息)
 			SecurityContextHolder.setContext(contextBeforeChainExecution);
 			if (contextBeforeChainExecution.getAuthentication() == null) {
 				logger.debug("Set SecurityContextHolder to empty SecurityContext");
@@ -112,7 +117,9 @@ public class SecurityContextPersistenceFilter extends GenericFilterBean {
 		finally {
 			SecurityContext contextAfterChainExecution = SecurityContextHolder.getContext();
 			// Crucial removal of SecurityContextHolder contents before anything else.
+			// 将 SecurityContext 对象 从 SecurityContextHolder中清除
 			SecurityContextHolder.clearContext();
+			// 将 SecurityContext 对象 放入Session中
 			this.repo.saveContext(contextAfterChainExecution, holder.getRequest(), holder.getResponse());
 			request.removeAttribute(FILTER_APPLIED);
 			this.logger.debug("Cleared SecurityContextHolder to complete request");

@@ -66,6 +66,8 @@ import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
  * }
  * </pre>
  *
+ * 开启 Security 功能
+ *
  * @see WebSecurityConfigurer
  * @see WebSecurityConfigurerAdapter
  *

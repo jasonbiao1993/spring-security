@@ -28,7 +28,7 @@ import org.springframework.security.crypto.scrypt.SCryptPasswordEncoder;
 
 /**
  * Used for creating {@link PasswordEncoder} instances
- *
+ * 密码编码工厂类
  * @author Rob Winch
  * @since 5.0
  */

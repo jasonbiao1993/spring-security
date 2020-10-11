@@ -34,6 +34,12 @@ package org.springframework.security.core.userdetails;
 public interface UserDetailsService {
 
 	/**
+	 * 不能直接使用 创建 BCryptPasswordEncoder 对象来加密， 这种加密方式 没有 {bcrypt}  前缀，会导致在  matches 时导致获取不到加密的算法出现
+	 * java.lang.IllegalArgumentException: There is no PasswordEncoder mapped for the id "null"  问题
+	 * 问题原因是 Spring Security5 使用 DelegatingPasswordEncoder(委托)  替代 NoOpPasswordEncoder
+	 * 并且 默认使用  BCryptPasswordEncoder 加密（注意 DelegatingPasswordEncoder 委托加密方法BCryptPasswordEncoder  加密前  添加了加密类型的前缀）
+	 * https://blog.csdn.net/alinyua/article/details/80219500
+	 *
 	 * Locates the user based on the username. In the actual implementation, the search
 	 * may possibly be case sensitive, or case insensitive depending on how the
 	 * implementation instance is configured. In this case, the <code>UserDetails</code>

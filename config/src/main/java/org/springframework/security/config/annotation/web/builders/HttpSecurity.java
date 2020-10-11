@@ -1160,6 +1160,8 @@ public final class HttpSecurity extends AbstractConfiguredSecurityBuilder<Defaul
 	 * http.authorizeRequests().antMatchers(&quot;/**&quot;).hasRole(&quot;USER&quot;).antMatchers(&quot;/admin/**&quot;)
 	 * 		.hasRole(&quot;ADMIN&quot;)
 	 * </pre>
+	 *
+	 * 开始请求权限配置
 	 * @return the {@link ExpressionUrlAuthorizationConfigurer} for further customizations
 	 * @throws Exception
 	 * @see #requestMatcher(RequestMatcher)
@@ -1779,6 +1781,8 @@ public final class HttpSecurity extends AbstractConfiguredSecurityBuilder<Defaul
 	 * 	}
 	 * }
 	 * </pre>
+	 *
+	 * 表单登陆
 	 * @return the {@link FormLoginConfigurer} for further customizations
 	 * @throws Exception
 	 * @see FormLoginConfigurer#loginPage(String)
@@ -2520,9 +2524,14 @@ public final class HttpSecurity extends AbstractConfiguredSecurityBuilder<Defaul
 		setSharedObject(AuthenticationManager.class, getAuthenticationRegistry().build());
 	}
 
+	/**
+	 * 创建 DefaultSecurityFilterChain （Security Filter 责任链 ）
+	 */
 	@Override
 	protected DefaultSecurityFilterChain performBuild() {
+		// 排序
 		this.filters.sort(this.comparator);
+		// 默认安全过滤器链
 		return new DefaultSecurityFilterChain(this.requestMatcher, this.filters);
 	}
 
@@ -2542,6 +2551,9 @@ public final class HttpSecurity extends AbstractConfiguredSecurityBuilder<Defaul
 		return getSharedObject(AuthenticationManagerBuilder.class);
 	}
 
+	/**
+	 * 添加在afterFilter之后
+	 */
 	@Override
 	public HttpSecurity addFilterAfter(Filter filter, Class<? extends Filter> afterFilter) {
 		this.comparator.registerAfter(filter.getClass(), afterFilter);

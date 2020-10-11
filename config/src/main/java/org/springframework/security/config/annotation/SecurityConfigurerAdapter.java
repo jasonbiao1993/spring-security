@@ -39,6 +39,9 @@ public abstract class SecurityConfigurerAdapter<O, B extends SecurityBuilder<O>>
 
 	private B securityBuilder;
 
+	/**
+	 * 复合对象后置处理器
+	 */
 	private CompositeObjectPostProcessor objectPostProcessor = new CompositeObjectPostProcessor();
 
 	@Override
@@ -101,6 +104,8 @@ public abstract class SecurityConfigurerAdapter<O, B extends SecurityBuilder<O>>
 	/**
 	 * An {@link ObjectPostProcessor} that delegates work to numerous
 	 * {@link ObjectPostProcessor} implementations.
+	 *
+	 * 使用内部类的方式，只对内部使用，对外部隐藏实现细节
 	 *
 	 * @author Rob Winch
 	 */

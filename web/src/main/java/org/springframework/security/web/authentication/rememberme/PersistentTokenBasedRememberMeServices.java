@@ -100,12 +100,14 @@ public class PersistentTokenBasedRememberMeServices extends AbstractRememberMeSe
 		}
 		String presentedSeries = cookieTokens[0];
 		String presentedToken = cookieTokens[1];
+		// 1 通过 tokenRepository 加载数据库token信息
 		PersistentRememberMeToken token = this.tokenRepository.getTokenForSeries(presentedSeries);
 		if (token == null) {
 			// No series match, so we can't authenticate using this cookie
 			throw new RememberMeAuthenticationException("No persistent token found for series id: " + presentedSeries);
 		}
 		// We have a match for this user/series combination
+		// 2 判断 用户传入token和数据中的token是否一致，不一致可能存在安全问题
 		if (!presentedToken.equals(token.getTokenValue())) {
 			// Token doesn't match series value. Delete all logins for this user and throw
 			// an exception to warn them.
@@ -124,6 +126,7 @@ public class PersistentTokenBasedRememberMeServices extends AbstractRememberMeSe
 		PersistentRememberMeToken newToken = new PersistentRememberMeToken(token.getUsername(), token.getSeries(),
 				generateTokenData(), new Date());
 		try {
+			// 3 更新 token 并添加到Cookie中
 			this.tokenRepository.updateToken(newToken.getSeries(), newToken.getTokenValue(), newToken.getDate());
 			addCookie(newToken, request, response);
 		}
@@ -131,6 +134,8 @@ public class PersistentTokenBasedRememberMeServices extends AbstractRememberMeSe
 			this.logger.error("Failed to update token: ", ex);
 			throw new RememberMeAuthenticationException("Autologin failed due to data access problem");
 		}
+
+		// 4 通过 UserDetailsService().loadUserByUsername() 方法加载UserDetails 信息并返回
 		return getUserDetailsService().loadUserByUsername(token.getUsername());
 	}
 
@@ -142,12 +147,16 @@ public class PersistentTokenBasedRememberMeServices extends AbstractRememberMeSe
 	@Override
 	protected void onLoginSuccess(HttpServletRequest request, HttpServletResponse response,
 			Authentication successfulAuthentication) {
+		// 1 获取账户名
 		String username = successfulAuthentication.getName();
 		this.logger.debug(LogMessage.format("Creating new persistent login for user %s", username));
+		// 2 创建  PersistentRememberMeToken 对象
 		PersistentRememberMeToken persistentToken = new PersistentRememberMeToken(username, generateSeriesData(),
 				generateTokenData(), new Date());
 		try {
+			// 3 通过 tokenRepository 存储 persistentRememberMeToken 信息
 			this.tokenRepository.createNewToken(persistentToken);
+			// 4 将 persistentRememberMeToken 信息添加到Cookie中
 			addCookie(persistentToken, request, response);
 		}
 		catch (Exception ex) {

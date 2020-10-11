@@ -81,6 +81,8 @@ import org.springframework.security.config.annotation.web.servlet.configuration.
  * @see EnableWebSecurity
  * @see EnableGlobalMethodSecurity
  *
+ * 认证相关配置
+ *
  * @author Rob Winch
  *
  */
