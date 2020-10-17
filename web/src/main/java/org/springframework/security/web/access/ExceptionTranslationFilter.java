@@ -74,6 +74,8 @@ import org.springframework.web.filter.GenericFilterBean;
  * authenticated. The default implementation is {@link HttpSessionRequestCache}.</li>
  * </ul>
  *
+ * 异常翻译过滤器
+ * 作用：
  * ExceptionTranslationFilter 其实没有做任何过滤处理，但别小看它得作用，
  * 它最大也最牛叉之处就在于它捕获AuthenticationException 和AccessDeniedException，
  * 如果发生的异常是这2个异常 会调用 handleSpringSecurityException()方法进行处理
@@ -179,6 +181,7 @@ public class ExceptionTranslationFilter extends GenericFilterBean {
 	private void handleAuthenticationException(HttpServletRequest request, HttpServletResponse response,
 			FilterChain chain, AuthenticationException exception) throws ServletException, IOException {
 		this.logger.trace("Sending to authentication entry point since authentication failed", exception);
+		// 重定向到登录端点
 		sendStartAuthentication(request, response, chain, exception);
 	}
 
@@ -191,6 +194,7 @@ public class ExceptionTranslationFilter extends GenericFilterBean {
 				logger.trace(LogMessage.format("Sending %s to authentication entry point since access is denied",
 						authentication), exception);
 			}
+			// 重定向到登录端点
 			sendStartAuthentication(request, response, chain,
 					new InsufficientAuthenticationException(
 							this.messages.getMessage("ExceptionTranslationFilter.insufficientAuthentication",
@@ -202,6 +206,8 @@ public class ExceptionTranslationFilter extends GenericFilterBean {
 						LogMessage.format("Sending %s to access denied handler since access is denied", authentication),
 						exception);
 			}
+
+			// 交给accessDeniedHandler处理
 			this.accessDeniedHandler.handle(request, response, exception);
 		}
 	}

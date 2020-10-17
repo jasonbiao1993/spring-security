@@ -85,6 +85,7 @@ public class HttpSessionSecurityContextRepository implements SecurityContextRepo
 
 	/**
 	 * The default key under which the security context will be stored in the session.
+	 * 'SPRING_SECURITY_CONTEXT'是安全上下文默认存储在Session中的键值
 	 */
 	public static final String SPRING_SECURITY_CONTEXT_KEY = "SPRING_SECURITY_CONTEXT";
 
@@ -110,6 +111,7 @@ public class HttpSessionSecurityContextRepository implements SecurityContextRepo
 	 * If the session is null, the context object is null or the context object stored in
 	 * the session is not an instance of {@code SecurityContext}, a new context object
 	 * will be generated and returned.
+	 * 从当前request中取出安全上下文，如果session为空，则会返回一个新的安全上下文
 	 */
 	@Override
 	public SecurityContext loadContext(HttpRequestResponseHolder requestResponseHolder) {
@@ -162,6 +164,7 @@ public class HttpSessionSecurityContextRepository implements SecurityContextRepo
 			return null;
 		}
 		// Session exists, so try to obtain a context from it.
+		// Session存在的情况下，尝试获取其中的SecurityContext
 		Object contextFromSession = httpSession.getAttribute(this.springSecurityContextKey);
 		if (contextFromSession == null) {
 			if (this.logger.isTraceEnabled()) {
@@ -199,6 +202,7 @@ public class HttpSessionSecurityContextRepository implements SecurityContextRepo
 	 * {@link SecurityContextHolderStrategy} in use. The default implementations will
 	 * return a new <tt>SecurityContextImpl</tt>.
 	 * @return a new SecurityContext instance. Never null.
+	 * 初次请求时创建一个新的SecurityContext实例
 	 */
 	protected SecurityContext generateNewContext() {
 		return SecurityContextHolder.createEmptyContext();

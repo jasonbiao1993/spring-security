@@ -79,6 +79,8 @@ import org.springframework.web.filter.DelegatingFilterProxy;
  * @since 3.2
  * @see EnableWebSecurity
  * @see WebSecurityConfiguration
+ *
+ * 主要用处创建 FilterChainProxy，其实就是springSecurityFilterChain
  */
 public final class WebSecurity extends AbstractConfiguredSecurityBuilder<Filter, WebSecurity>
 		implements SecurityBuilder<Filter>, ApplicationContextAware {
@@ -284,6 +286,8 @@ public final class WebSecurity extends AbstractConfiguredSecurityBuilder<Filter,
 		for (SecurityBuilder<? extends SecurityFilterChain> securityFilterChainBuilder : this.securityFilterChainBuilders) {
 			securityFilterChains.add(securityFilterChainBuilder.build());
 		}
+
+		// FilterChainProxy 由 WebSecurity 构建
 		FilterChainProxy filterChainProxy = new FilterChainProxy(securityFilterChains);
 		if (this.httpFirewall != null) {
 			filterChainProxy.setFirewall(this.httpFirewall);

@@ -49,6 +49,8 @@ import org.springframework.web.filter.GenericFilterBean;
  *
  * @author Ben Alex
  * @author Eddú Meléndez
+ *
+ * 处理注销的过滤器
  */
 public class LogoutFilter extends GenericFilterBean {
 

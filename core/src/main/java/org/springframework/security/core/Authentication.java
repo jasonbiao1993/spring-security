@@ -62,7 +62,7 @@ public interface Authentication extends Principal, Serializable {
 	 * @return the authorities granted to the principal, or an empty collection if the
 	 * token has not been authenticated. Never null.
 	 *
-	 * 1  获取权限信息（不能仅仅理解为角色权限，还有菜单权限等等），默认是GrantedAuthority接口的实现类
+	 * 权限信息列表，默认是GrantedAuthority接口的一些实现类，通常是代表权限信息的一系列字符串
 	 */
 	Collection<? extends GrantedAuthority> getAuthorities();
 
@@ -72,7 +72,7 @@ public interface Authentication extends Principal, Serializable {
 	 * are expected to populate the credentials.
 	 * @return the credentials that prove the identity of the <code>Principal</code>
 	 *
-	 * 2 获取用户密码信息 ，认证成功后会被删除掉
+	 * 密码信息，用户输入的密码字符串，在认证过后通常会被移除，用于保障安全
 	 */
 	Object getCredentials();
 
@@ -81,7 +81,7 @@ public interface Authentication extends Principal, Serializable {
 	 * address, certificate serial number etc.
 	 * @return additional details about the authentication request, or <code>null</code>
 	 * if not used
-	 * 3  主要存放访问着的ip等信息
+	 * 细节信息，web应用中的实现接口通常为 WebAuthenticationDetails，它记录了访问者的ip地址和sessionId的值。
 	 */
 	Object getDetails();
 
@@ -96,7 +96,7 @@ public interface Authentication extends Principal, Serializable {
 	 * {@code UserDetails} object as the principal.
 	 * @return the <code>Principal</code> being authenticated or the authenticated
 	 * principal after authentication.
-	 * 4  重点！！ 最重要的身份信息。 大部分情况下是 UserDetails 接口的实现类
+	 * 身份信息，大部分情况下返回的是UserDetails接口的实现类，也是框架中的常用接口之一
 	 */
 	Object getPrincipal();
 

@@ -48,6 +48,8 @@ import org.springframework.web.filter.GenericFilterBean;
  * @author Martin Algesten
  * @author Luke Taylor
  * @since 2.0
+ *
+ * 和session相关的过滤器，内部维护了一个SessionAuthenticationStrategy，两者组合使用，常用来防止session-fixation protection attack，以及限制同一用户开启多个会话的数量
  */
 public class SessionManagementFilter extends GenericFilterBean {
 

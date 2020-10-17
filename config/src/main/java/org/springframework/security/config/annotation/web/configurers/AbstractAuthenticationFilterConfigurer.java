@@ -70,6 +70,9 @@ public abstract class AbstractAuthenticationFilterConfigurer<B extends HttpSecur
 
 	private AuthenticationSuccessHandler successHandler = this.defaultSuccessHandler;
 
+	/**
+	 *  formLogin配置了AuthenticationEntryPoint
+	 */
 	private LoginUrlAuthenticationEntryPoint authenticationEntryPoint;
 
 	private boolean customLoginPage;
@@ -78,6 +81,9 @@ public abstract class AbstractAuthenticationFilterConfigurer<B extends HttpSecur
 
 	private String loginProcessingUrl;
 
+	/**
+	 * 认证失败的处理器
+	 */
 	private AuthenticationFailureHandler failureHandler;
 
 	private boolean permitAll;

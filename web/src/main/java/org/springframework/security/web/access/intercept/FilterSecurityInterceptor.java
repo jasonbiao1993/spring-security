@@ -40,6 +40,7 @@ import org.springframework.security.web.FilterInvocation;
  * </p>
  *
  * FilterSecurityInterceptor 是整个Security filter链中的最后一个，它的主要功能就是判断认证成功的用户是否有权限访问接口
+ * 这个过滤器决定了访问特定路径应该具备的权限，访问的用户的角色，权限是什么？访问的路径需要什么样的角色和权限？这些判断和处理都是由该类进行的
  *
  * @author Ben Alex
  * @author Rob Winch

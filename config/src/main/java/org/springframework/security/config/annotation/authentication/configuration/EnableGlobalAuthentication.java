@@ -81,7 +81,7 @@ import org.springframework.security.config.annotation.web.servlet.configuration.
  * @see EnableWebSecurity
  * @see EnableGlobalMethodSecurity
  *
- * 认证相关配置
+ * 激活了AuthenticationConfiguration这样的一个配置类，用来配置认证相关的核心类
  *
  * @author Rob Winch
  *

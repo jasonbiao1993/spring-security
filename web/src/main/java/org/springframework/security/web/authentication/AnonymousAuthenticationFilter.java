@@ -44,6 +44,7 @@ import org.springframework.web.filter.GenericFilterBean;
  *
  * @author Ben Alex
  * @author Luke Taylor
+ * 匿名身份过滤器，这个过滤器个人认为很重要，需要将它与UsernamePasswordAuthenticationFilter 放在一起比较理解，spring security为了兼容未登录的访问，也走了一套认证流程，只不过是一个匿名的身份。
  */
 public class AnonymousAuthenticationFilter extends GenericFilterBean implements InitializingBean {
 
@@ -59,15 +60,16 @@ public class AnonymousAuthenticationFilter extends GenericFilterBean implements 
 	 * Creates a filter with a principal named "anonymousUser" and the single authority
 	 * "ROLE_ANONYMOUS".
 	 * @param key the key to identify tokens created by this filter
+	 * 自动创建一个"anonymousUser"的匿名用户,其具有ANONYMOUS角色
 	 */
 	public AnonymousAuthenticationFilter(String key) {
 		this(key, "anonymousUser", AuthorityUtils.createAuthorityList("ROLE_ANONYMOUS"));
 	}
 
 	/**
-	 * @param key key the key to identify tokens created by this filter
-	 * @param principal the principal which will be used to represent anonymous users
-	 * @param authorities the authority list for anonymous users
+	 * @param key key the key to identify tokens created by this filter key用来识别该过滤器创建的身份
+	 * @param principal the principal which will be used to represent anonymous users principal代表匿名用户的身份
+	 * @param authorities the authority list for anonymous users authorities代表匿名用户的权限集合
 	 */
 	public AnonymousAuthenticationFilter(String key, Object principal, List<GrantedAuthority> authorities) {
 		Assert.hasLength(key, "key cannot be null or empty");
@@ -88,6 +90,7 @@ public class AnonymousAuthenticationFilter extends GenericFilterBean implements 
 	@Override
 	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
 			throws IOException, ServletException {
+		// 过滤器链都执行到匿名认证过滤器这儿了还没有身份信息，塞一个匿名身份进去
 		if (SecurityContextHolder.getContext().getAuthentication() == null) {
 			SecurityContextHolder.getContext().setAuthentication(createAuthentication((HttpServletRequest) req));
 			if (this.logger.isTraceEnabled()) {
@@ -108,6 +111,7 @@ public class AnonymousAuthenticationFilter extends GenericFilterBean implements 
 	}
 
 	protected Authentication createAuthentication(HttpServletRequest request) {
+		// 创建一个AnonymousAuthenticationToken
 		AnonymousAuthenticationToken token = new AnonymousAuthenticationToken(this.key, this.principal,
 				this.authorities);
 		token.setDetails(this.authenticationDetailsSource.buildDetails(request));

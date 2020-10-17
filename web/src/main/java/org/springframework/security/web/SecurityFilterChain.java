@@ -29,6 +29,8 @@ import javax.servlet.http.HttpServletRequest;
  *
  * @author Luke Taylor
  * @since 3.1
+ *
+ * SecurityFilterChain 真正意义上的 SpringSecurityFilterChain
  */
 public interface SecurityFilterChain {
 

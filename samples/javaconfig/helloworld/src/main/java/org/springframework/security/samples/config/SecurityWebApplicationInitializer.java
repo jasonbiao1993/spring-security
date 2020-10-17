@@ -22,6 +22,8 @@ import org.springframework.security.web.context.AbstractSecurityWebApplicationIn
  * No customizations of {@link AbstractSecurityWebApplicationInitializer} are necessary.
  *
  * @author Rob Winch
+ *
+ * servlet3.0 初始化 spring serurity
  */
 public class SecurityWebApplicationInitializer extends
 		AbstractSecurityWebApplicationInitializer {

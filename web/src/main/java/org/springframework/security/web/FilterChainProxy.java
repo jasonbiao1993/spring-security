@@ -139,6 +139,8 @@ import org.springframework.web.filter.GenericFilterBean;
  * @author Ben Alex
  * @author Luke Taylor
  * @author Rob Winch
+ *
+ * FilterChainProxy 由 WebSecurity 构建
  */
 public class FilterChainProxy extends GenericFilterBean {
 
@@ -146,6 +148,12 @@ public class FilterChainProxy extends GenericFilterBean {
 
 	private static final String FILTER_APPLIED = FilterChainProxy.class.getName().concat(".APPLIED");
 
+	/**
+	 * 安全过滤器链list
+	 * 同一个 Spring 环境下，可能同时存在多个安全过滤器链，每个 request 最多只会经过一个 SecurityFilterChain
+	 * 为何要这么设计？因为 Web 环境下可能有多种安全保护策略，每种策略都需要有自己的一条链路，比如我曾经设计过 Oauth2 服务，在极端条件下，
+	 * 可能同一个服务本身既是资源服务器，又是认证服务器，还需要做 Web 安全！
+	 */
 	private List<SecurityFilterChain> filterChains;
 
 	private FilterChainValidator filterChainValidator = new NullFilterChainValidator();

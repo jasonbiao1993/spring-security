@@ -41,6 +41,8 @@ import org.springframework.web.filter.GenericFilterBean;
  *
  * @author Luke Taylor
  * @since 3.0
+ *
+ *  内部维护了一个RequestCache，用于缓存request请求
  */
 public class RequestCacheAwareFilter extends GenericFilterBean {
 

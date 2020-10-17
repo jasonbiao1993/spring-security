@@ -131,6 +131,7 @@ public final class HttpSecurity extends AbstractConfiguredSecurityBuilder<Defaul
 
 	private RequestMatcher requestMatcher = AnyRequestMatcher.INSTANCE;
 
+	// 过滤器排序规则
 	private FilterComparator comparator = new FilterComparator();
 
 	/**

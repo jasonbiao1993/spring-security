@@ -27,6 +27,9 @@ import org.springframework.util.ClassUtils;
  *
  * @author Rob Winch
  * @since 3.2
+ *
+ * SpringWebMvcImportSelector的作用是判断当前的环境是否包含springmvc，
+ * 因为spring security可以在非spring环境下使用，为了避免DispatcherServlet的重复配置，所以使用了这个注解来区分。
  */
 class SpringWebMvcImportSelector implements ImportSelector {
 

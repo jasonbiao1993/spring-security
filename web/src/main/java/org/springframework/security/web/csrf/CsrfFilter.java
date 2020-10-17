@@ -57,6 +57,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
  *
  * @author Rob Winch
  * @since 3.2
+ *
+ *
+ * 用于防止csrf攻击，了解前后端分离的人一定不会对这个攻击方式感到陌生，前后端使用json交互需要注意的一个问题
  */
 public final class CsrfFilter extends OncePerRequestFilter {
 

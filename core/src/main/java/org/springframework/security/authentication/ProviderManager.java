@@ -221,6 +221,8 @@ public class ProviderManager implements AuthenticationManager, MessageSourceAwar
 				lastException = ex;
 			}
 		}
+
+		// 如果有Authentication信息，则直接返回
 		if (result != null) {
 			if (this.eraseCredentialsAfterAuthentication && (result instanceof CredentialsContainer)) {
 				// Authentication is complete. Remove credentials and other secret data
@@ -233,6 +235,7 @@ public class ProviderManager implements AuthenticationManager, MessageSourceAwar
 			// This check prevents a duplicate AuthenticationSuccessEvent if the parent
 			// AuthenticationManager already published it
 			if (parentResult == null) {
+				//发布登录成功事件
 				this.eventPublisher.publishAuthenticationSuccess(result);
 			}
 
@@ -240,6 +243,7 @@ public class ProviderManager implements AuthenticationManager, MessageSourceAwar
 		}
 
 		// Parent was null, or didn't authenticate (or throw an exception).
+		//执行到此，说明没有认证成功，包装异常信息
 		if (lastException == null) {
 			lastException = new ProviderNotFoundException(this.messages.getMessage("ProviderManager.providerNotFound",
 					new Object[] { toTest.getName() }, "No AuthenticationProvider found for {0}"));

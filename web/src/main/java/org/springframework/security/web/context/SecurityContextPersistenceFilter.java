@@ -55,7 +55,7 @@ import org.springframework.web.filter.GenericFilterBean;
  * always available before the filter chain executes (the default is <code>false</code>,
  * as this is resource intensive and not recommended).
  *
- * 安全上下文持久化过滤
+ * 请求来临时，创建SecurityContext安全上下文信息，请求结束时清空SecurityContextHolder
  *
  * @author Luke Taylor
  * @since 3.0
@@ -64,11 +64,16 @@ public class SecurityContextPersistenceFilter extends GenericFilterBean {
 
 	static final String FILTER_APPLIED = "__spring_security_scpf_applied";
 
+	/**
+	 * 安全上下文存储的仓库
+ 	 */
 	private SecurityContextRepository repo;
 
 	private boolean forceEagerSessionCreation = false;
 
 	public SecurityContextPersistenceFilter() {
+		// HttpSessionSecurityContextRepository是SecurityContextRepository接口的一个实现类
+		// 使用HttpSession来存储SecurityContext
 		this(new HttpSessionSecurityContextRepository());
 	}
 
@@ -85,6 +90,7 @@ public class SecurityContextPersistenceFilter extends GenericFilterBean {
 	private void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
 		// ensure that filter is only applied once per request
+		// 确保每个请求仅应用一次过滤器
 		if (request.getAttribute(FILTER_APPLIED) != null) {
 			chain.doFilter(request, response);
 			return;
@@ -96,12 +102,15 @@ public class SecurityContextPersistenceFilter extends GenericFilterBean {
 				this.logger.debug(LogMessage.format("Created session %s eagerly", session.getId()));
 			}
 		}
+
+		// 包装request，response
 		HttpRequestResponseHolder holder = new HttpRequestResponseHolder(request, response);
 
 		//从Session中获取SecurityContxt 对象，如果Session中没有则创建一个 authtication 属性为 null 的SecurityContext对象
 		SecurityContext contextBeforeChainExecution = this.repo.loadContext(holder);
 		try {
 			// 将 SecurityContext 对象放入 SecurityContextHolder进行管理 （SecurityContextHolder默认使用ThreadLocal 策略来存储认证信息)
+			// 请求开始时，设置安全上下文信息，这样就避免了用户直接从Session中获取安全上下文信息
 			SecurityContextHolder.setContext(contextBeforeChainExecution);
 			if (contextBeforeChainExecution.getAuthentication() == null) {
 				logger.debug("Set SecurityContextHolder to empty SecurityContext");
@@ -118,6 +127,7 @@ public class SecurityContextPersistenceFilter extends GenericFilterBean {
 			SecurityContext contextAfterChainExecution = SecurityContextHolder.getContext();
 			// Crucial removal of SecurityContextHolder contents before anything else.
 			// 将 SecurityContext 对象 从 SecurityContextHolder中清除
+			// 请求结束后，清空安全上下文信息
 			SecurityContextHolder.clearContext();
 			// 将 SecurityContext 对象 放入Session中
 			this.repo.saveContext(contextAfterChainExecution, holder.getRequest(), holder.getResponse());

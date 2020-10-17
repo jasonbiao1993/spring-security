@@ -65,6 +65,8 @@ import org.springframework.web.filter.GenericFilterBean;
  * @author Luke Taylor
  * @author Rob Winch
  * @author Eddú Meléndez
+ *
+ * 此过滤器对ServletRequest进行了一次包装，使得request具有更加丰富的API
  */
 public class SecurityContextHolderAwareRequestFilter extends GenericFilterBean {
 

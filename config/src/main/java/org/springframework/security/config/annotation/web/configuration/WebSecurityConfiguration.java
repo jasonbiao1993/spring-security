@@ -60,7 +60,7 @@ import org.springframework.util.Assert;
  * {@link WebSecurityConfigurer} and exposing it as a {@link Configuration}. This
  * configuration is imported when using {@link EnableWebSecurity}.
  *
- * 授权相关的配置
+ * 用来配置web安全的
  *
  * @see EnableWebSecurity
  * @see WebSecurity
@@ -101,6 +101,7 @@ public class WebSecurityConfiguration implements ImportAware, BeanClassLoaderAwa
 	 * Creates the Spring Security Filter Chain
 	 * @return the {@link Filter} that represents the security filter chain
 	 * @throws Exception
+	 * WebSecurityConfiguration中完成了声明springSecurityFilterChain的作用，并且最终交给DelegatingFilterProxy这个代理类，负责拦截请求
 	 */
 	@Bean(name = AbstractSecurityWebApplicationInitializer.DEFAULT_FILTER_NAME)
 	public Filter springSecurityFilterChain() throws Exception {

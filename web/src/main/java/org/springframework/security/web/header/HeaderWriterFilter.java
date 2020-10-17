@@ -41,6 +41,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
  * @author Josh Cummings
  * @author Ankur Pathak
  * @since 3.2
+ *
+ * 用来给http响应添加一些Header,比如X-Frame-Options, X-XSS-Protection*，X-Content-Type-Options.CsrfFilter
  */
 public class HeaderWriterFilter extends OncePerRequestFilter {
 

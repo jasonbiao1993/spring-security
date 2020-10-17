@@ -59,6 +59,7 @@ public class AccessDeniedHandlerImpl implements AccessDeniedHandler {
 		}
 		if (this.errorPage == null) {
 			logger.debug("Responding with 403 status code");
+			// 设置响应403
 			response.sendError(HttpStatus.FORBIDDEN.value(), HttpStatus.FORBIDDEN.getReasonPhrase());
 			return;
 		}
@@ -70,6 +71,8 @@ public class AccessDeniedHandlerImpl implements AccessDeniedHandler {
 		if (logger.isDebugEnabled()) {
 			logger.debug(LogMessage.format("Forwarding to %s with status code 403", this.errorPage));
 		}
+
+		// 请求转发到错误页面
 		request.getRequestDispatcher(this.errorPage).forward(request, response);
 	}
 

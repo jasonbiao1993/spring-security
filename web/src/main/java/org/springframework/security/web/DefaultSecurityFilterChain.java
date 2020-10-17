@@ -34,6 +34,8 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
  *
  * @author Luke Taylor
  * @since 3.1
+ *
+ * 默认安全过滤器链实现
  */
 public final class DefaultSecurityFilterChain implements SecurityFilterChain {
 
@@ -41,6 +43,9 @@ public final class DefaultSecurityFilterChain implements SecurityFilterChain {
 
 	private final RequestMatcher requestMatcher;
 
+	/**
+	 * Spring Security 各种过滤器，如：UsernamePasswordAuthenticationFilter、SecurityContextPersistenceFilter、FilterSecurityInterceptor 等等
+	 */
 	private final List<Filter> filters;
 
 	public DefaultSecurityFilterChain(RequestMatcher requestMatcher, Filter... filters) {

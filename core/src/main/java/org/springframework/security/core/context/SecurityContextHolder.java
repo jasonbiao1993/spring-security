@@ -46,6 +46,8 @@ import org.springframework.util.StringUtils;
  *
  * @author Ben Alex
  *
+ * 安全上下文，用于存储用户信息和用户授权信息和权限信息
+ * SecurityContextHolder默认使用ThreadLocal 策略来存储认证信息
  */
 public class SecurityContextHolder {
 

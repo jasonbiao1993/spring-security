@@ -115,10 +115,16 @@ public abstract class AbstractAuthenticationProcessingFilter extends GenericFilt
 
 	protected AuthenticationDetailsSource<HttpServletRequest, ?> authenticationDetailsSource = new WebAuthenticationDetailsSource();
 
+	/**
+	 * 包含了一个身份认证器
+	 */
 	private AuthenticationManager authenticationManager;
 
 	protected MessageSourceAccessor messages = SpringSecurityMessageSource.getAccessor();
 
+	/**
+	 * 用于实现remeberMe
+	 */
 	private RememberMeServices rememberMeServices = new NullRememberMeServices();
 
 	private RequestMatcher requiresAuthenticationRequestMatcher;
@@ -129,6 +135,9 @@ public abstract class AbstractAuthenticationProcessingFilter extends GenericFilt
 
 	private boolean allowSessionCreation = true;
 
+	/**
+	 * 这两个Handler很关键，分别代表了认证成功和失败相应的处理器
+	 */
 	private AuthenticationSuccessHandler successHandler = new SavedRequestAwareAuthenticationSuccessHandler();
 
 	private AuthenticationFailureHandler failureHandler = new SimpleUrlAuthenticationFailureHandler();
@@ -224,9 +233,11 @@ public abstract class AbstractAuthenticationProcessingFilter extends GenericFilt
 			// 3 调用 子类  UsernamePasswordAuthenticationFilter 的 attemptAuthentication 方法
 			// attemptAuthentication 方法内部创建了 authenticated 属性为 false （即未授权）的 UsernamePasswordAuthenticationToken 对象， 并传递给 AuthenticationManager().authenticate() 方法进行认证，
 			// 认证成功后 返回一个 authenticated = true （即授权成功的） UsernamePasswordAuthenticationToken 对象
+			// 此处实际上就是调用UsernamePasswordAuthenticationFilter的attemptAuthentication方法
 			Authentication authenticationResult = attemptAuthentication(request, response);
 			if (authenticationResult == null) {
 				// return immediately as subclass has indicated that it hasn't completed
+				// 子类未完成认证，立刻返回
 				return;
 			}
 			// 4 将认证成功的 Authentication 存入Session中
@@ -239,9 +250,11 @@ public abstract class AbstractAuthenticationProcessingFilter extends GenericFilt
 
 
 			// 6 认证成功后 调用 AuthenticationSuccessHandler 的 onAuthenticationSuccess 接口 进行失败处理（ 可以 通过 继承 AuthenticationSuccessHandler 自行编写成功处理逻辑 ）
+			// 认证成功后过滤器把authenticationResult结果也传递给了成功处理器
 			successfulAuthentication(request, response, chain, authenticationResult);
 		}
 		catch (InternalAuthenticationServiceException failed) {
+			// 内部服务异常
 			// 5 认证失败后 调用 AuthenticationFailureHandler 的 onAuthenticationFailure 接口 进行失败处理（ 可以 通过 继承 AuthenticationFailureHandler 自行编写失败处理逻辑 ）
 			this.logger.error("An internal error occurred while trying to authenticate the user.", failed);
 			unsuccessfulAuthentication(request, response, failed);
@@ -334,7 +347,7 @@ public abstract class AbstractAuthenticationProcessingFilter extends GenericFilt
 			this.eventPublisher.publishEvent(new InteractiveAuthenticationSuccessEvent(authResult, this.getClass()));
 		}
 
-		//3 调用成功处理器
+		// 3 调用成功处理器
 		this.successHandler.onAuthenticationSuccess(request, response, authResult);
 	}
 

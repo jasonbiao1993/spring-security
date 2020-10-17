@@ -112,6 +112,7 @@ public abstract class AbstractSecurityWebApplicationInitializer implements WebAp
 			servletContext.addListener("org.springframework.security.web.session.HttpSessionEventPublisher");
 		}
 		servletContext.setSessionTrackingModes(getSessionTrackingModes());
+		// 插入Spring security 过滤链
 		insertSpringSecurityFilterChain(servletContext);
 		afterSpringSecurityFilterChain(servletContext);
 	}
@@ -132,11 +133,14 @@ public abstract class AbstractSecurityWebApplicationInitializer implements WebAp
 	 */
 	private void insertSpringSecurityFilterChain(ServletContext servletContext) {
 		String filterName = DEFAULT_FILTER_NAME;
+		// 创建DelegatingFilterProxy 用于处理springSecurityFilterChain
 		DelegatingFilterProxy springSecurityFilterChain = new DelegatingFilterProxy(filterName);
 		String contextAttribute = getWebApplicationContextAttribute();
 		if (contextAttribute != null) {
 			springSecurityFilterChain.setContextAttribute(contextAttribute);
 		}
+
+		// 使用servlet3.0的新特性，动态注册springSecurityFilterChain(实际上注册的是springSecurityFilterChain代理类)
 		registerFilter(servletContext, true, filterName, springSecurityFilterChain);
 	}
 
